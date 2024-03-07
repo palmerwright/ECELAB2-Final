@@ -11,8 +11,8 @@
 --| ---------------------------------------------------------------------------
 --|
 --| FILENAME      : top_basys3.vhd
---| AUTHOR(S)     : Capt Phillip Warner
---| CREATED       : 01/22/2018 Last modified 02/09/2023
+--| AUTHOR(S)     : Palmer Wright
+--| CREATED       : 02/27/2024
 --| DESCRIPTION   : This file implements the top level module for a BASYS 3 to utilize 
 --|					a seven-segment decoder for displaying hex values on seven-segment 
 --|					displays (7SD) according to 4-bit inputs provided by switches.
@@ -77,24 +77,36 @@ entity top_basys3 is
 end top_basys3;
 
 architecture top_basys3_arch of top_basys3 is 
+    
+    component sevenSegDecoder is 
+    Port ( i_D : in STD_LOGIC_VECTOR (3 downto 0);
+           o_S : out STD_LOGIC_VECTOR (6 downto 0));
+    end component sevenSegDecoder;
 	
   -- declare the component of your top-level design unit under test (UUT)
 
-
+signal w_7SD_EN_n : std_logic;
   -- create wire to connect button to 7SD enable (active-low)
 
   
 begin
 	-- PORT MAPS ----------------------------------------
-
+    sevenSegDecoder_inst: sevenSegDecoder
+    port Map(
+    i_D => sw,
+    o_S => seg
+    
+    );
+    
 	--	Port map: wire your component up to the switches and seven-segment display cathodes
 	-----------------------------------------------------	
 	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
-	
+	w_7SD_EN_n <= not btnC;
 	-- wire up active-low 7SD anode (active low) to button (active-high)
 	-- display 7SD 0 only when button pushed
+	an <= (0 => w_7SD_EN_n, others => '1');
 	-- other 7SD are kept off
 	-----------------------------------------------------
 	
